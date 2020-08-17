@@ -3,8 +3,14 @@ import 'package:flireator/utils/services_bundle.dart';
 import 'package:flireator/widgets/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/driver_extension.dart';
+import 'package:redux/redux.dart';
+import 'package:redux_remote_devtools/redux_remote_devtools.dart';
 
-void main() {
+void main() async {
+  const rdtMode = bool.fromEnvironment('RDT');
+  final _remoteDevtools =
+      (rdtMode) ? RemoteDevToolsMiddleware<dynamic>('localhost:8000') : null;
+
   // This line enables the extension.
   enableFlutterDriverExtension();
 
@@ -18,10 +24,22 @@ void main() {
   /// All the app services bundled together
   final services = ServicesBundle(navKey: navKey);
 
-  // Create the redux bundle (services, middleware, store)
-  final redux = ReduxBundle(services);
+  /// Any extra middlewares we want to add
+  final middlewares = <Middleware>[];
 
-  // Call the `main()` function of the app, or call `runApp` with
-  // any widget you are interested in testing.
+  /// if in RDT mode, create a RemoteDevToolsMiddleware
+  if (rdtMode) {
+    middlewares.add(_remoteDevtools);
+  }
+
+  // Create the redux bundle (services, middleware, store)
+  final redux = ReduxBundle(services, extraMiddlewares: middlewares);
+
+  // if in RDT mode, connect RDT to the redux store and the devtools server
+  if (rdtMode) {
+    _remoteDevtools.store = redux.store;
+    await _remoteDevtools.connect();
+  }
+
   runApp(FlireatorApp(redux.store, navKey));
 }
