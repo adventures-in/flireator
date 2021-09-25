@@ -1,0 +1,1 @@
+This repo was moved to https://github.com/enspyrco/monorepo/tree/main/packages/flireator
