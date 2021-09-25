@@ -1,1 +1,1 @@
-This repo was moved to https://github.com/enspyrco/monorepo/tree/main/packages/flireator
+This repo was merged in to the enspyrco monorepo, see: https://github.com/enspyrco/monorepo/tree/main/packages/flireator
